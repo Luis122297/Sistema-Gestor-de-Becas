@@ -1,0 +1,212 @@
+
+Report Summary
+
+┌──────────────────────────────────────────────────────────────────────────────────┬──────────┬─────────────────┬─────────┐
+│                                      Target                                      │   Type   │ Vulnerabilities │ Secrets │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ composer.lock                                                                    │ composer │        3        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ package-lock.json                                                                │   npm    │        1        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ vendor/laravel/framework/src/Illuminate/Foundation/resources/exceptions/rendere- │   npm    │        0        │    -    │
+│ r/package-lock.json                                                              │          │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ vendor/mockery/mockery/docs/requirements.txt                                     │   pip    │       20        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ vendor/swagger-api/swagger-ui/package-lock.json                                  │   npm    │       17        │    -    │
+└──────────────────────────────────────────────────────────────────────────────────┴──────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+composer.lock (composer)
+========================
+Total: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 3, HIGH: 0, CRITICAL: 0)
+
+┌───────────────────┬─────────────────────┬──────────┬────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│      Library      │    Vulnerability    │ Severity │ Status │ Installed Version │ Fixed Version │                            Title                            │
+├───────────────────┼─────────────────────┼──────────┼────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ guzzlehttp/guzzle │ GHSA-f283-ghqc-fg79 │ MEDIUM   │ fixed  │ 7.14.2            │ 7.15.1        │ Guzzle: Unbounded response cookies risk denial of service   │
+│                   │                     │          │        │                   │               │ https://github.com/advisories/GHSA-f283-ghqc-fg79           │
+│                   ├─────────────────────┤          │        │                   │               ├─────────────────────────────────────────────────────────────┤
+│                   │ GHSA-h95v-h523-3mw8 │          │        │                   │               │ Guzzle: URI fragments disclosed in redirect Referer headers │
+│                   │                     │          │        │                   │               │ https://github.com/advisories/GHSA-h95v-h523-3mw8           │
+│                   ├─────────────────────┤          │        │                   │               ├─────────────────────────────────────────────────────────────┤
+│                   │ GHSA-wm3w-8rrp-j577 │          │        │                   │               │ Guzzle: Host-only cookie scope is not preserved             │
+│                   │                     │          │        │                   │               │ https://github.com/advisories/GHSA-wm3w-8rrp-j577           │
+└───────────────────┴─────────────────────┴──────────┴────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
+package-lock.json (npm)
+=======================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+┌─────────┬────────────────┬──────────┬────────┬───────────────────┬───────────────┬───────────────────────────────────────────────────────────┐
+│ Library │ Vulnerability  │ Severity │ Status │ Installed Version │ Fixed Version │                           Title                           │
+├─────────┼────────────────┼──────────┼────────┼───────────────────┼───────────────┼───────────────────────────────────────────────────────────┤
+│ postcss │ CVE-2026-69153 │ MEDIUM   │ fixed  │ 8.5.19            │ 8.5.23        │ PostCSS: incomplete fix of GHSA-6g55-p6wh-862q —          │
+│         │                │          │        │                   │               │ attacker-controlled sourceMappingURL reads arbitrary .map │
+│         │                │          │        │                   │               │ files...                                                  │
+│         │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2026-69153                │
+└─────────┴────────────────┴──────────┴────────┴───────────────────┴───────────────┴───────────────────────────────────────────────────────────┘
+
+vendor/mockery/mockery/docs/requirements.txt (pip)
+==================================================
+Total: 20 (UNKNOWN: 0, LOW: 2, MEDIUM: 11, HIGH: 7, CRITICAL: 0)
+
+┌────────────┬────────────────┬──────────┬────────┬───────────────────┬────────────────┬──────────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Status │ Installed Version │ Fixed Version  │                            Title                             │
+├────────────┼────────────────┼──────────┼────────┼───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ Jinja2     │ CVE-2024-56201 │ MEDIUM   │ fixed  │ 3.1.4             │ 3.1.5          │ jinja2: Jinja has a sandbox breakout through malicious       │
+│            │                │          │        │                   │                │ filenames                                                    │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2024-56201                   │
+│            ├────────────────┤          │        │                   │                ├──────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-56326 │          │        │                   │                │ jinja2: Jinja has a sandbox breakout through indirect        │
+│            │                │          │        │                   │                │ reference to format method...                                │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2024-56326                   │
+│            ├────────────────┤          │        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2025-27516 │          │        │                   │ 3.1.6          │ jinja2: Jinja sandbox breakout through attr filter selecting │
+│            │                │          │        │                   │                │ format method                                                │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2025-27516                   │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ Pygments   │ CVE-2026-4539  │ LOW      │        │ 2.17.2            │ 2.20.0         │ pygments: Pygments: Denial of Service via inefficient        │
+│            │                │          │        │                   │                │ regular expression processing in AdlLexer...                 │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2026-4539                    │
+├────────────┼────────────────┤          │        ├───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ certifi    │ CVE-2024-39689 │          │        │ 2024.2.2          │ 2024.7.4       │ python-certifi: Remove root certificates from `GLOBALTRUST`  │
+│            │                │          │        │                   │                │ from the root store                                          │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2024-39689                   │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ idna       │ CVE-2026-45409 │ MEDIUM   │        │ 3.7               │ 3.15           │ python-idna: idna: Denial of Service via specially crafted   │
+│            │                │          │        │                   │                │ long inputs                                                  │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2026-45409                   │
+├────────────┼────────────────┤          │        ├───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ requests   │ CVE-2024-35195 │          │        │ 2.31.0            │ 2.32.0         │ requests: subsequent requests to the same host ignore cert   │
+│            │                │          │        │                   │                │ verification                                                 │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2024-35195                   │
+│            ├────────────────┤          │        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-47081 │          │        │                   │ 2.32.4         │ requests: Requests vulnerable to .netrc credentials leak via │
+│            │                │          │        │                   │                │ malicious URLs                                               │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2024-47081                   │
+│            ├────────────────┤          │        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2026-25645 │          │        │                   │ 2.33.0         │ requests: Requests: Security bypass due to predictable       │
+│            │                │          │        │                   │                │ temporary file creation                                      │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2026-25645                   │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ setuptools │ CVE-2024-6345  │ HIGH     │        │ 69.2.0            │ 70.0.0         │ pypa/setuptools: Remote code execution via download          │
+│            │                │          │        │                   │                │ functions in the package_index module in...                  │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2024-6345                    │
+│            ├────────────────┤          │        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2025-47273 │          │        │                   │ 78.1.1         │ setuptools: Path Traversal Vulnerability in setuptools       │
+│            │                │          │        │                   │                │ PackageIndex                                                 │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2025-47273                   │
+│            ├────────────────┼──────────┤        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2026-59890 │ MEDIUM   │        │                   │ 83.0.0         │ setuptools: setuptools: MANIFEST.in exclusion bypass in      │
+│            │                │          │        │                   │                │ sdist via Unicode normalization collision (NFC/NFD)...       │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2026-59890                   │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ urllib3    │ CVE-2025-66418 │ HIGH     │        │ 2.2.1             │ 2.6.0          │ urllib3: urllib3: Unbounded decompression chain leads to     │
+│            │                │          │        │                   │                │ resource exhaustion                                          │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2025-66418                   │
+│            ├────────────────┤          │        │                   │                ├──────────────────────────────────────────────────────────────┤
+│            │ CVE-2025-66471 │          │        │                   │                │ urllib3: urllib3 Streaming API improperly handles highly     │
+│            │                │          │        │                   │                │ compressed data                                              │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2025-66471                   │
+│            ├────────────────┤          │        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2026-21441 │          │        │                   │ 2.6.3          │ urllib3: urllib3 vulnerable to decompression-bomb safeguard  │
+│            │                │          │        │                   │                │ bypass when following HTTP redirects (streaming...           │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2026-21441                   │
+│            ├────────────────┤          │        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2026-44431 │          │        │                   │ 2.7.0          │ urllib3: urllib3: Information disclosure via cross-origin    │
+│            │                │          │        │                   │                │ redirects forwarding sensitive headers                       │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2026-44431                   │
+│            ├────────────────┼──────────┤        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-37891 │ MEDIUM   │        │                   │ 1.26.19, 2.2.2 │ urllib3: proxy-authorization request header is not stripped  │
+│            │                │          │        │                   │                │ during cross-origin redirects                                │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2024-37891                   │
+│            ├────────────────┤          │        │                   ├────────────────┼──────────────────────────────────────────────────────────────┤
+│            │ CVE-2025-50181 │          │        │                   │ 2.5.0          │ urllib3: urllib3 redirects are not disabled when retries are │
+│            │                │          │        │                   │                │ disabled on PoolManager...                                   │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2025-50181                   │
+│            ├────────────────┤          │        │                   │                ├──────────────────────────────────────────────────────────────┤
+│            │ CVE-2025-50182 │          │        │                   │                │ urllib3: urllib3 does not control redirects in browsers and  │
+│            │                │          │        │                   │                │ Node.js                                                      │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2025-50182                   │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼────────────────┼──────────────────────────────────────────────────────────────┤
+│ wheel      │ CVE-2026-24049 │ HIGH     │        │ 0.43.0            │ 0.46.2         │ wheel: wheel: Privilege Escalation or Arbitrary Code         │
+│            │                │          │        │                   │                │ Execution via malicious wheel file...                        │
+│            │                │          │        │                   │                │ https://avd.aquasec.com/nvd/cve-2026-24049                   │
+└────────────┴────────────────┴──────────┴────────┴───────────────────┴────────────────┴──────────────────────────────────────────────────────────────┘
+
+vendor/swagger-api/swagger-ui/package-lock.json (npm)
+=====================================================
+Total: 17 (UNKNOWN: 0, LOW: 1, MEDIUM: 9, HIGH: 7, CRITICAL: 0)
+
+┌─────────────────┬─────────────────────┬──────────┬────────┬───────────────────┬─────────────────────────────┬─────────────────────────────────────────────────────────────┐
+│     Library     │    Vulnerability    │ Severity │ Status │ Installed Version │        Fixed Version        │                            Title                            │
+├─────────────────┼─────────────────────┼──────────┼────────┼───────────────────┼─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ axios           │ GHSA-gcfj-64vw-6mp9 │ HIGH     │ fixed  │ 1.16.0            │ 0.33.0, 1.18.0              │ Axios Node HTTP adapter can use an inherited proxy after    │
+│                 │                     │          │        │                   │                             │ interceptor config...                                       │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-gcfj-64vw-6mp9           │
+│                 ├─────────────────────┼──────────┤        │                   │                             ├─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-42h9-826w-cgv3 │ MEDIUM   │        │                   │                             │ Axios: Excessive recursion in formDataToJSON can cause      │
+│                 │                     │          │        │                   │                             │ denial of service                                           │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-42h9-826w-cgv3           │
+│                 ├─────────────────────┤          │        │                   │                             ├─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-7q8q-rj6j-mhjq │          │        │                   │                             │ Axios: Nested axios option objects can consume polluted     │
+│                 │                     │          │        │                   │                             │ prototype values                                            │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-7q8q-rj6j-mhjq           │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-f4gw-2p7v-4548 │          │        │                   │ 1.18.0, 0.33.0              │ Axios: NO_PROXY bypass for 0.0.0.0 local addresses in axios │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-f4gw-2p7v-4548           │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-hcpx-6fm6-wx23 │          │        │                   │ 0.33.0, 1.18.0              │ Axios form serializer maxDepth bypass via {} metatoken      │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-hcpx-6fm6-wx23           │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-jqh4-m9w3-8hp9 │          │        │                   │ 1.18.0                      │ Axios: Fetch adapter `ReadableStream` uploads bypass        │
+│                 │                     │          │        │                   │                             │ `maxBodyLength`                                             │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-jqh4-m9w3-8hp9           │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-mmx7-hfxf-jppx │          │        │                   │ 1.18.0, 0.33.0              │ Axios: Prototype pollution gadgets can alter axios request  │
+│                 │                     │          │        │                   │                             │ construction                                                │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-mmx7-hfxf-jppx           │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-mwf2-3pr3-8698 │          │        │                   │ 1.18.0                      │ Axios: HTTP/2 streamed uploads bypass `maxBodyLength`       │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-mwf2-3pr3-8698           │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-pmv8-rq9r-6j72 │          │        │                   │ 0.33.0, 1.18.0              │ Axios: Deep formToJSON Key Recursion Can Cause Denial of    │
+│                 │                     │          │        │                   │                             │ Service                                                     │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-pmv8-rq9r-6j72           │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ GHSA-xj6q-8x83-jv6g │          │        │                   │ 1.18.0                      │ Axios: Prototype pollution auth subfields can inject Basic  │
+│                 │                     │          │        │                   │                             │ auth                                                        │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-xj6q-8x83-jv6g           │
+├─────────────────┼─────────────────────┼──────────┤        ├───────────────────┼─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ brace-expansion │ CVE-2026-13149      │ HIGH     │        │ 5.0.6             │ 5.0.7, 1.1.16, 2.1.2        │ brace-expansion: Brace-expansion: Denial of Service due to  │
+│                 │                     │          │        │                   │                             │ exponential-time complexity                                 │
+│                 │                     │          │        │                   │                             │ https://avd.aquasec.com/nvd/cve-2026-13149                  │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ CVE-2026-14257      │          │        │                   │ 5.0.8, 3.0.3, 2.1.3, 1.1.17 │ brace-expansion through 5.0.7 is vulnerable to denial of    │
+│                 │                     │          │        │                   │                             │ service via m ......                                        │
+│                 │                     │          │        │                   │                             │ https://avd.aquasec.com/nvd/cve-2026-14257                  │
+│                 ├─────────────────────┤          │        │                   ├─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│                 │ CVE-2026-69152      │          │        │                   │ 1.1.18, 2.1.4, 3.0.6, 5.0.9 │ brace-expansion: DoS via unbounded intermediate arrays,     │
+│                 │                     │          │        │                   │                             │ bypassing the CVE-2026-14257 mitigation                     │
+│                 │                     │          │        │                   │                             │ https://avd.aquasec.com/nvd/cve-2026-69152                  │
+├─────────────────┼─────────────────────┼──────────┤        ├───────────────────┼─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ dompurify       │ GHSA-c2j3-45gr-mqc4 │ LOW      │        │ 3.4.11            │ 3.4.12                      │ DOMPurify: `CUSTOM_ELEMENT_HANDLING` bypasses               │
+│                 │                     │          │        │                   │                             │ `afterSanitizeElements` for allowed custom elements.        │
+│                 │                     │          │        │                   │                             │ https://github.com/advisories/GHSA-c2j3-45gr-mqc4           │
+├─────────────────┼─────────────────────┼──────────┤        ├───────────────────┼─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ immutable       │ CVE-2026-59879      │ HIGH     │        │ 3.8.3             │ 4.3.9, 5.1.8                │ Immutable.js provides many Persistent Immutable data        │
+│                 │                     │          │        │                   │                             │ structures. Prior ...                                       │
+│                 │                     │          │        │                   │                             │ https://avd.aquasec.com/nvd/cve-2026-59879                  │
+│                 ├─────────────────────┤          │        │                   │                             ├─────────────────────────────────────────────────────────────┤
+│                 │ CVE-2026-59880      │          │        │                   │                             │ Immutable.js provides many Persistent Immutable data        │
+│                 │                     │          │        │                   │                             │ structures. Prior ...                                       │
+│                 │                     │          │        │                   │                             │ https://avd.aquasec.com/nvd/cve-2026-59880                  │
+├─────────────────┼─────────────────────┤          │        ├───────────────────┼─────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ js-yaml         │ CVE-2026-59869      │          │        │ 4.2.0             │ 3.15.0, 4.3.0               │ js-yaml: js-yaml: Denial of Service via crafted YAML        │
+│                 │                     │          │        │                   │                             │ documents                                                   │
+│                 │                     │          │        │                   │                             │ https://avd.aquasec.com/nvd/cve-2026-59869                  │
+└─────────────────┴─────────────────────┴──────────┴────────┴───────────────────┴─────────────────────────────┴─────────────────────────────────────────────────────────────┘

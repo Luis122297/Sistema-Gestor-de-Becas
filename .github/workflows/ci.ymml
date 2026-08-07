@@ -1,0 +1,23 @@
+name: CI/CD Pipeline Segurizado
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  analisis-codigo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: phpstan
+
+      - name: Instalar dependencias
+        run: composer install --prefer-dist --no-progress --no-scripts
+
+      - name: Análisis estático con PHPStan
+        run: phpstan analyse app --level=1
