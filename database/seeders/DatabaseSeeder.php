@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         for ($i = 1; $i <= 30; $i++) {
-            $matricula = 132026000 + $i; 
+            $matricula = 132026000 + $i;
             $nombreAlumno = 'Alumno Prueba ' . $i;
             
             $alumno = User::create([

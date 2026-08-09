@@ -1,6 +1,7 @@
 <template>
     <div class="min-h-screen bg-[#FFF9F5] font-sans text-gray-800">
         
+        <!-- BARRA DE NAVEGACIÓN -->
         <nav class="bg-gradient-to-r from-[#4b1020] to-[#722F37] shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16 items-center">
@@ -11,6 +12,15 @@
                         <span class="text-white font-bold text-xl tracking-wide">Portal de Becas UPTEX</span>
                     </div>
                     <div class="flex items-center space-x-4">
+                        
+                        <!-- NOMBRE Y CORREO DEL USUARIO -->
+                        <div class="hidden md:flex flex-col items-end">
+                            <span class="text-white font-bold text-sm leading-tight">{{ userName }}</span>
+                            <span class="text-gray-300 text-xs leading-tight">{{ userEmail }}</span>
+                        </div>
+                        
+                        <div class="hidden md:block h-8 w-px bg-[#933b47]"></div>
+
                         <span class="text-[#FCE5D6] text-sm font-medium capitalize flex items-center">
                             <span class="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
                             Rol: {{ userRole.replace('_', ' ') }}
@@ -26,6 +36,7 @@
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-up">
             
+            <!-- ENCABEZADO -->
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h2 class="text-3xl font-extrabold text-gray-900">Gestión de Profesores</h2>
@@ -37,6 +48,7 @@
                 </router-link>
             </div>
 
+            <!-- FORMULARIO DE REGISTRO/EDICIÓN -->
             <form @submit.prevent="saveProfesor" class="mb-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
@@ -66,6 +78,13 @@
                 </div>
             </form>
 
+            <!-- MENSAJE DE ERROR DEL BACKEND -->
+            <div v-if="errorBackend" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl font-bold flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                {{ errorBackend }}
+            </div>
+
+            <!-- TABLA DE PROFESORES -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-100">
@@ -77,8 +96,11 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-50">
-                            <tr v-if="profesores.length === 0">
-                                <td colspan="3" class="px-6 py-8 text-center text-gray-500">No hay profesores registrados en el sistema.</td>
+                            <tr v-if="isLoading" class="animate-pulse">
+                                <td colspan="3" class="px-6 py-8 text-center text-gray-500 font-bold">Cargando base de datos...</td>
+                            </tr>
+                            <tr v-else-if="profesores.length === 0">
+                                <td colspan="3" class="px-6 py-8 text-center text-gray-500 font-medium">No hay profesores registrados en el sistema.</td>
                             </tr>
                             <tr v-for="profesor in profesores" :key="profesor.id" class="hover:bg-[#FFF9F5] transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -89,10 +111,10 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end gap-2">
-                                        <button @click="editProfesor(profesor)" class="bg-[#FCE5D6] text-[#7A2033] hover:bg-[#FAD4BA] px-4 py-2 rounded-lg font-bold transition-colors">
+                                        <button @click="editProfesor(profesor)" class="bg-[#FCE5D6] text-[#7A2033] hover:bg-[#FAD4BA] px-4 py-2 rounded-lg font-bold transition-colors shadow-sm">
                                             Editar
                                         </button>
-                                        <button @click="deleteProfesor(profesor.id)" class="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg font-bold transition-colors">
+                                        <button @click="deleteProfesor(profesor.id)" class="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg font-bold transition-colors shadow-sm">
                                             Eliminar
                                         </button>
                                     </div>
@@ -115,6 +137,11 @@ import axios from 'axios';
 const router = useRouter();
 const userRole = ref(localStorage.getItem('user_role') || 'jefe_carrera');
 
+const userName = ref('Cargando...');
+const userEmail = ref('');
+const errorBackend = ref('');
+const isLoading = ref(true);
+
 const token = localStorage.getItem('auth_token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -130,12 +157,38 @@ const form = ref({
     password: ''
 });
 
+onMounted(async () => {
+    // 1. Obtener datos del usuario logueado
+    try {
+        const userRes = await axios.get('/api/user');
+        userName.value = userRes.data.name;
+        userEmail.value = userRes.data.email;
+    } catch (err) {
+        userName.value = 'Usuario UPTEX';
+    }
+
+    // 2. Cargar los profesores
+    await fetchProfesores();
+});
+
 const fetchProfesores = async () => {
+    isLoading.value = true;
+    errorBackend.value = '';
+    
     try {
         const response = await axios.get('/api/profesores');
-        profesores.value = response.data;
+        // Esto arregla el problema si Laravel manda la info envuelta en "data"
+        profesores.value = response.data.data ? response.data.data : response.data;
     } catch (error) {
         console.error('Error al cargar profesores:', error);
+        
+        if (error.response && error.response.status === 500) {
+            errorBackend.value = '🚨 ERROR 500: Laravel falló al buscar los profesores. Revisa la línea 13 de tu ProfessorController.php (Está intentando leer "role" de un usuario nulo).';
+        } else {
+            errorBackend.value = 'No se pudo conectar con la base de datos de profesores.';
+        }
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -197,8 +250,6 @@ const logout = async () => {
         router.push('/login');
     }
 };
-
-onMounted(fetchProfesores);
 </script>
 
 <style scoped>

@@ -8,16 +8,23 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfessorController extends Controller
 {
-    // 1. Obtener la lista de todos los profesores
-    public function index()
+    public function index(Request $request)
     {
+        if (!$request->user() || $request->user()->role !== 'jefe_carrera') {
+            return response()->json(['message' => 'Acceso denegado'], 403);
+        }
+
         $profesores = User::where('role', 'profesor')->orderBy('name')->get();
         return response()->json($profesores);
     }
 
-    // 2. Crear un profesor nuevo
     public function store(Request $request)
     {
+
+        if (!$request->user() || $request->user()->role !== 'jefe_carrera') {
+            return response()->json(['message' => 'Acceso denegado'], 403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -28,15 +35,18 @@ class ProfessorController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'profesor' // Forzamos el rol para que no creen administradores
+            'role' => 'profesor'
         ]);
 
         return response()->json(['message' => 'Profesor creado con éxito', 'profesor' => $profesor]);
     }
 
-    // 3. Actualizar un profesor existente
     public function update(Request $request, $id)
     {
+        if (!$request->user() || $request->user()->role !== 'jefe_carrera') {
+            return response()->json(['message' => 'Acceso denegado'], 403);
+        }
+
         $profesor = User::where('id', $id)->where('role', 'profesor')->firstOrFail();
 
         $request->validate([
@@ -47,7 +57,6 @@ class ProfessorController extends Controller
         $profesor->name = $request->name;
         $profesor->email = $request->email;
 
-        // Si la jefa escribió una contraseña nueva, la actualizamos
         if ($request->filled('password')) {
             $profesor->password = Hash::make($request->password);
         }
@@ -57,9 +66,13 @@ class ProfessorController extends Controller
         return response()->json(['message' => 'Profesor actualizado correctamente', 'profesor' => $profesor]);
     }
 
-    // 4. Eliminar a un profesor
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+
+        if (!$request->user() || $request->user()->role !== 'jefe_carrera') {
+            return response()->json(['message' => 'Acceso denegado'], 403);
+        }
+
         $profesor = User::where('id', $id)->where('role', 'profesor')->firstOrFail();
         $profesor->delete();
 

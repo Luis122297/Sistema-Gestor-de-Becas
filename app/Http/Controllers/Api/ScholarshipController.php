@@ -32,6 +32,26 @@ class ScholarshipController extends Controller
         return ScholarshipResource::collection($applications);
     }
 
+    public function getMyStatus(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if ($user->role !== 'alumno') {
+            return response()->json(['status' => 'ninguno']);
+        }
+
+        $student = $user->student;
+        if (!$student) {
+            return response()->json(['status' => 'ninguno']);
+        }
+
+        $app = ScholarshipApplication::where('student_id', $student->id)->first();
+        if (!$app) {
+            return response()->json(['status' => 'ninguno']);
+        }
+
+        return response()->json(['status' => $app->status]);
+    }
+
     public function export(Request $request)
     {
         if ($request->user()->role !== 'jefe_carrera') {
@@ -40,14 +60,13 @@ class ScholarshipController extends Controller
 
         $applications = ScholarshipApplication::with('student.user')->get();
 
-        $csvData = "\xEF\xBB\xBF" . "Alumno,Matricula,Promedio,Porcentaje_Asignado,Estatus,Motivo_Justificacion\n";
+        $csvData = "\xEF\xBB\xBF" . "Alumno;Matricula;Promedio;Porcentaje_Asignado;Estatus\n";
         
         foreach ($applications as $app) {
             $nombre = $app->student && $app->student->user ? $app->student->user->name : 'Sin Nombre';
+            $porcentaje = $app->assigned_percentage ?? 0;
             
-            $motivo = str_replace(["\r", "\n", "\""], [" ", " ", "\"\""], $app->justification ?? 'Sin justificación');
-            
-            $csvData .= "{$nombre},{$app->matricula},{$app->current_gpa},{$app->assigned_percentage},{$app->status},\"{$motivo}\"\n";
+            $csvData .= "{$nombre};{$app->matricula};{$app->current_gpa};{$porcentaje};{$app->status}\n";
         }
 
         return response($csvData)
@@ -95,10 +114,7 @@ class ScholarshipController extends Controller
             'justification'        => 'required|string|max:1000',
         ]);
 
-        $student = $user->student;
-        if (! $student) {
-            return response()->json(['message' => 'No tienes un expediente de estudiante asignado.'], 400);
-        }
+        $student = $user->student()->firstOrCreate([]);
 
         $application = ScholarshipApplication::updateOrCreate(
             ['student_id' => $student->id],

@@ -58,7 +58,6 @@ const form = ref({
     email: '',
     password: '',
     password_confirmation: '',
-    // Eliminamos el rol, ya que el backend lo asigna.
 });
 
 const register = async () => {

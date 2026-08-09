@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso - Sistema de Becas para el Bienestar</title>
+    <title>Sistema de Becas</title>
     <!-- Cargamos Tailwind desde CDN para el diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
