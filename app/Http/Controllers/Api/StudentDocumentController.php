@@ -44,7 +44,11 @@ class StudentDocumentController extends Controller
         $student = $user->student;
 
         if (! $student) {
-            return response()->json(['message' => 'No se encontró un expediente asociado a esta cuenta.'], 404);
+            $career = \App\Models\Career::first();
+            $student = $user->student()->create([
+                'name'      => $user->name,
+                'career_id' => $career ? $career->id : 1,
+            ]);
         }
 
         return $this->processUpload($request, $student);
