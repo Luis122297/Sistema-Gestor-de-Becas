@@ -412,6 +412,15 @@ const onExtraSelected = (event) => {
     if (file) { extraFile.value = file; extraName.value = file.name; }
 };
 
+const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+};
+
 const enviarSolicitud = async () => {
     if (studentForm.value.matricula.length !== 9) {
         alert('La matrícula debe tener exactamente 9 dígitos numéricos.');
@@ -423,14 +432,12 @@ const enviarSolicitud = async () => {
         await axios.post('/api/scholarships/my-request', studentForm.value);
 
         if (photoFile.value || kardexFile.value || extraFile.value) {
-            const formData = new FormData();
-            if (photoFile.value) formData.append('photo', photoFile.value);
-            if (kardexFile.value) formData.append('kardex', kardexFile.value);
-            if (extraFile.value) formData.append('extra_document', extraFile.value);
+            const payloadBase64 = {};
+            if (photoFile.value) payloadBase64.photo = await fileToBase64(photoFile.value);
+            if (kardexFile.value) payloadBase64.kardex = await fileToBase64(kardexFile.value);
+            if (extraFile.value) payloadBase64.extra_document = await fileToBase64(extraFile.value);
             
-            await axios.post('/api/students/my-documents', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            await axios.post('/api/students/my-documents', payloadBase64);
         }
         
         miEstatus.value = 'pendiente';
