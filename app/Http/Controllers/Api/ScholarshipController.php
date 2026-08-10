@@ -139,17 +139,30 @@ class ScholarshipController extends Controller
     {
         $user = Auth::user();
         
-        $application = \App\Models\ScholarshipApplication::where('student_id', $user->id)->first();
+        if ($user->role !== 'alumno') {
+            return response()->json(['status' => 'ninguno']);
+        }
+
+        $student = $user->student;
+        
+        if (!$student) {
+            return response()->json([
+                'status' => 'ninguno',
+                'message' => 'No has enviado ninguna solicitud aún.'
+            ]);
+        }
+        
+        $application = \App\Models\ScholarshipApplication::where('student_id', $student->id)->first();
 
         if (!$application) {
             return response()->json([
-                'status' => 'sin_solicitud',
+                'status' => 'ninguno',
                 'message' => 'No has enviado ninguna solicitud aún.'
             ]);
         }
 
         return response()->json([
-            'status' => 'success',
+            'status' => $application->status,
             'application_status' => $application->status, 
             'assigned_percentage' => $application->assigned_percentage
         ]);
