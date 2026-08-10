@@ -19,11 +19,7 @@ class ScholarshipController extends Controller
         $user = $request->user();
         $query = ScholarshipApplication::with(['student.career', 'student.group']);
 
-        if ($user->role === 'profesor') {
-            $query->whereHas('student.group', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
-        } elseif ($user->role === 'alumno') {
+        if ($user->role === 'alumno') {
              $query->whereHas('student', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             });
@@ -71,9 +67,7 @@ class ScholarshipController extends Controller
         $user = $request->user();
         if ($user->role !== 'profesor') return response()->json(['message' => 'Acción exclusiva para profesores'], 403);
 
-        $application = ScholarshipApplication::whereHas('student.group', function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })->findOrFail($id);
+        $application = ScholarshipApplication::findOrFail($id);
 
         $validated = $request->validate([
             'professor_comment'    => 'required|string|max:500',
