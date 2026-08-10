@@ -262,6 +262,25 @@
                                 </div>
 
                                 <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Nivel de Estudios</label>
+                                    <select v-model="studentForm.career_type" required class="block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-[#7A2033] p-3 border">
+                                        <option value="" disabled>Selecciona tu nivel...</option>
+                                        <option value="licenciatura">Licenciatura</option>
+                                        <option value="ingenieria">Ingeniería</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Promedio Actual (Según Kardex)</label>
+                                    <input v-model="studentForm.current_gpa" type="number" step="0.01" min="0" max="10" required 
+                                        class="block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-[#7A2033] focus:border-[#7A2033] p-3 shadow-sm transition-colors border" 
+                                        placeholder="Ej. 8.5">
+                                    <p class="mt-2 text-xs text-red-600 font-bold bg-red-50 p-2 rounded border border-red-100">
+                                        * Atención: En caso de que los datos no coincidan con lo del Kardex el alumno será rechazado por datos falsos.
+                                    </p>
+                                </div>
+
+                                <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-2">Tipo de Beca Solicitada</label>
                                     <select v-model="studentForm.scholarship_type" required class="block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-[#7A2033] p-3 border">
                                         <option value="" disabled>Selecciona el tipo de beca...</option>
@@ -341,6 +360,8 @@ const isSubmitting = ref(false);
 const studentForm = ref({
     matricula: '',
     scholarship_type: '',
+    career_type: '',
+    current_gpa: '',
     justification: ''
 });
 
@@ -412,6 +433,15 @@ const onExtraSelected = (event) => {
     if (file) { extraFile.value = file; extraName.value = file.name; }
 };
 
+const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+};
+
 const enviarSolicitud = async () => {
     if (studentForm.value.matricula.length !== 9) {
         alert('La matrícula debe tener exactamente 9 dígitos numéricos.');
@@ -420,20 +450,16 @@ const enviarSolicitud = async () => {
 
     isSubmitting.value = true;
     try {
-        // 1. Enviamos los datos principales de la beca
         await axios.post('/api/scholarships/my-request', studentForm.value);
 
-        // 2. Si hay archivos, los mandamos en segundo plano por separado para no saturar la petición principal
         if (photoFile.value || kardexFile.value || extraFile.value) {
             try {
-                const formData = new FormData();
-                if (photoFile.value) formData.append('photo', photoFile.value);
-                if (kardexFile.value) formData.append('kardex', kardexFile.value);
-                if (extraFile.value) formData.append('extra_document', extraFile.value);
+                const payloadBase64 = {};
+                if (photoFile.value) payloadBase64.photo = await fileToBase64(photoFile.value);
+                if (kardexFile.value) payloadBase64.kardex = await fileToBase64(kardexFile.value);
+                if (extraFile.value) payloadBase64.extra_document = await fileToBase64(extraFile.value);
                 
-                await axios.post('/api/students/my-documents', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                await axios.post('/api/students/my-documents', payloadBase64);
             } catch (fileErr) {
                 console.log('Nota de archivos: La solicitud principal se guardó con éxito.');
             }

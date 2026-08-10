@@ -88,27 +88,33 @@ class ScholarshipController extends Controller
         $validated = $request->validate([
             'matricula'        => 'required|numeric|digits:9', 
             'scholarship_type' => 'required|string|in:promedio,socioeconomica,discapacidad',
+            'career_type'      => 'required|string|in:licenciatura,ingenieria',
+            'current_gpa'      => 'required|numeric|min:0|max:10',
             'justification'    => 'required|string|max:1000',
         ]);
 
         $student = $user->student;
-        if (!$student) {
-            $career = Career::first(); 
-            if (!$career) {
-                $career = Career::create(['name' => 'General', 'type' => 'ingenieria']);
-            }
-            
-            $group = Group::first();
+        $career = Career::where('type', $validated['career_type'])->first();
+        
+        if (!$career) {
+            $career = Career::create(['name' => ucfirst($validated['career_type']) . ' General', 'type' => $validated['career_type']]);
+        }
 
+        if (!$student) {
+            $group = Group::first();
             $student = $user->student()->create([
                 'name'      => $user->name,
                 'career_id' => $career->id,
                 'group_id'  => $group ? $group->id : null,
             ]);
-        } elseif (!$student->group_id) {
-            $group = Group::first();
-            if ($group) {
-                $student->update(['group_id' => $group->id]);
+        } else {
+            $student->update(['career_id' => $career->id]);
+            
+            if (!$student->group_id) {
+                $group = Group::first();
+                if ($group) {
+                    $student->update(['group_id' => $group->id]);
+                }
             }
         }
 
@@ -119,7 +125,7 @@ class ScholarshipController extends Controller
                 'scholarship_type' => $validated['scholarship_type'],
                 'justification'    => $validated['justification'],
                 'status'           => 'pendiente',
-                'current_gpa'      => 0.00,
+                'current_gpa'      => $validated['current_gpa'],
             ]
         );
 
