@@ -90,7 +90,7 @@
                             <div class="flex justify-between items-start mb-3">
                                 <div>
                                     <p class="font-bold text-gray-900">{{ notif.student_name }}</p>
-                                    <p class="text-xs text-[#7A2033] font-semibold bg-[#FCE5D6] inline-block px-2 py-0.5 rounded-md mt-1">Pide {{ notif.requested_percentage }}%</p>
+                                    <p class="text-xs text-[#7A2033] font-semibold bg-[#FCE5D6] inline-block px-2 py-0.5 rounded-md mt-1 uppercase">Beca: {{ notif.scholarship_type }}</p>
                                 </div>
                             </div>
                             <p class="text-sm text-gray-600 italic bg-gray-50 p-2 rounded-lg border border-gray-100">"{{ notif.justification }}"</p>
@@ -120,7 +120,7 @@
                                         <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Estudiante</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Promedio</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Dictamen</th>
-                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Porcentaje</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Porcentaje %</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-50">
@@ -128,6 +128,7 @@
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="font-bold text-sm text-gray-900">{{ app.student_name }}</div>
                                             <div class="text-xs text-gray-500">{{ app.career_name }}</div>
+                                            <div class="text-xs text-[#7A2033] font-bold mt-1 uppercase">Beca: {{ app.scholarship_type }}</div>
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="text-sm font-black" :class="app.gpa >= 8.5 ? 'text-green-600' : 'text-red-500'">{{ app.gpa }}</div>
@@ -138,7 +139,7 @@
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="flex items-center space-x-1">
-                                                <input type="number" v-model="app.assigned_percentage" class="w-16 border-gray-300 rounded-lg shadow-sm focus:ring-[#7A2033] focus:border-[#7A2033] text-xs p-1 border" :placeholder="app.requested_percentage || '0'">
+                                                <input type="number" v-model="app.assigned_percentage" class="w-16 border-gray-300 rounded-lg shadow-sm focus:ring-[#7A2033] focus:border-[#7A2033] text-xs p-1 border" placeholder="Ej. 50">
                                                 <button @click="asignarPorcentaje(app.id, app.assigned_percentage)" class="bg-[#FCE5D6] text-[#7A2033] hover:bg-[#FAD4BA] px-2 py-1 rounded-lg text-xs font-bold transition-colors">OK</button>
                                             </div>
                                         </td>
@@ -261,13 +262,12 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Porcentaje de descuento solicitado</label>
-                                    <select v-model="studentForm.requested_percentage" required class="block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-[#7A2033] p-3 border">
-                                        <option value="" disabled>Selecciona el nivel de apoyo...</option>
-                                        <option value="25">25% - Apoyo básico para transporte/material</option>
-                                        <option value="50">50% - Apoyo medio (Situación económica vulnerable)</option>
-                                        <option value="75">75% - Apoyo alto (Riesgo de deserción)</option>
-                                        <option value="100">100% - Beca completa (Casos excepcionales)</option>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Tipo de Beca Solicitada</label>
+                                    <select v-model="studentForm.scholarship_type" required class="block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-[#7A2033] p-3 border">
+                                        <option value="" disabled>Selecciona el tipo de beca...</option>
+                                        <option value="promedio">Beca por Excelencia Académica (Promedio)</option>
+                                        <option value="socioeconomica">Beca Socioeconómica</option>
+                                        <option value="discapacidad">Beca por Discapacidad</option>
                                     </select>
                                 </div>
 
@@ -340,7 +340,7 @@ const isSubmitting = ref(false);
 
 const studentForm = ref({
     matricula: '',
-    requested_percentage: '',
+    scholarship_type: '',
     justification: ''
 });
 
@@ -351,7 +351,7 @@ const loadingProfesores = ref(true);
 const error = ref(null);
 
 const notificaciones = computed(() => {
-    return applications.value.filter(app => app.kardex_url || app.requested_percentage);
+    return applications.value.filter(app => app.kardex_url || app.scholarship_type);
 });
 
 onMounted(async () => {

@@ -18,6 +18,7 @@ class Student extends Model
         'declared_income',
         'profile_photo_path',
         'kardex_path',
+        'extra_document_path',
     ];
 
     public function user(): BelongsTo

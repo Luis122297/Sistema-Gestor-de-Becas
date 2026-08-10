@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 class StudentDocumentController extends Controller
 {
-
     public function uploadDocuments(Request $request, int $studentId): JsonResponse
     {
         $request->validate([
-            'photo'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'kardex' => 'nullable|file|mimes:pdf|max:5120',
+            'photo'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'kardex'         => 'nullable|file|mimes:pdf|max:5120',
+            'extra_document' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:5120',
         ]);
 
         $student = Student::findOrFail($studentId);
@@ -35,8 +35,9 @@ class StudentDocumentController extends Controller
     public function uploadMyDocuments(Request $request): JsonResponse
     {
         $request->validate([
-            'photo'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'kardex' => 'nullable|file|mimes:pdf|max:5120',
+            'photo'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'kardex'         => 'nullable|file|mimes:pdf|max:5120',
+            'extra_document' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:5120',
         ]);
 
         $user = $request->user();
@@ -75,6 +76,17 @@ class StudentDocumentController extends Controller
             $uploaded['kardex'] = route('documents.show', ['filename' => basename($path), 'type' => 'kardex']);
         }
 
+        if ($request->hasFile('extra_document')) {
+            if ($student->extra_document_path) {
+                Storage::disk('local')->delete($student->extra_document_path);
+            }
+
+            $path = $request->file('extra_document')->store('extras', 'local');
+            $student->extra_document_path = $path;
+            
+            $uploaded['extra_document'] = route('documents.show', ['filename' => basename($path), 'type' => 'extras']);
+        }
+
         $student->save();
 
         return response()->json([
@@ -85,7 +97,7 @@ class StudentDocumentController extends Controller
 
     public function serveDocument(Request $request, string $type, string $filename)
     {
-        if (! in_array($type, ['profiles', 'kardex'])) {
+        if (! in_array($type, ['profiles', 'kardex', 'extras'])) {
             abort(404);
         }
 

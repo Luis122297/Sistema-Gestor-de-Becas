@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('declared_income', 10, 2)->nullable();
             $table->string('profile_photo_path')->nullable();
             $table->string('kardex_path')->nullable();
+            $table->string('extra_document_path')->nullable();
             $table->timestamps();
         });
     }

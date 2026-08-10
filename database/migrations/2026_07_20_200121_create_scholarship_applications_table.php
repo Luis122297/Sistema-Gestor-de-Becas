@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->string('matricula', 9)->nullable();
             $table->decimal('current_gpa', 4, 2);
-            $table->integer('requested_percentage')->nullable();
+            $table->string('scholarship_type')->nullable();
             $table->integer('assigned_percentage')->nullable();
             $table->text('justification')->nullable();
             $table->string('photo_url')->nullable();

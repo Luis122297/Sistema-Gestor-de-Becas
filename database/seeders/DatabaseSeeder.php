@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
             Group::create(['name' => '2M11', 'user_id' => $profesorOctavio->id])->id,
         ];
 
-        $porcentajes = [25, 50, 75, 100];
+        $tiposBeca = ['promedio', 'socioeconomica', 'discapacidad'];
         $motivos = [
             'Dificultad económica severa', 
             'Apoyo por discapacidad visual', 
@@ -85,7 +85,7 @@ class DatabaseSeeder extends Seeder
             ScholarshipApplication::create([
                 'student_id' => $student->id,
                 'matricula' => (string)$matricula,
-                'requested_percentage' => $porcentajes[array_rand($porcentajes)],
+                'scholarship_type' => $tiposBeca[array_rand($tiposBeca)],
                 'justification' => $motivos[array_rand($motivos)],
                 'status' => 'pendiente',
                 'current_gpa' => rand(70, 100) / 10

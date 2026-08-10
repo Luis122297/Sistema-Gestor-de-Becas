@@ -60,13 +60,14 @@ class ScholarshipController extends Controller
 
         $applications = ScholarshipApplication::with('student.user')->get();
 
-        $csvData = "\xEF\xBB\xBF" . "Alumno;Matricula;Promedio;Porcentaje_Asignado;Estatus\n";
+        $csvData = "\xEF\xBB\xBF" . "Alumno;Matricula;Promedio;Tipo_Beca;Porcentaje_Asignado;Estatus\n";
         
         foreach ($applications as $app) {
             $nombre = $app->student && $app->student->user ? $app->student->user->name : 'Sin Nombre';
             $porcentaje = $app->assigned_percentage ?? 0;
+            $tipoBeca = ucfirst($app->scholarship_type ?? 'N/A');
             
-            $csvData .= "{$nombre};{$app->matricula};{$app->current_gpa};{$porcentaje};{$app->status}\n";
+            $csvData .= "{$nombre};{$app->matricula};{$app->current_gpa};{$tipoBeca};{$porcentaje};{$app->status}\n";
         }
 
         return response($csvData)
@@ -109,9 +110,9 @@ class ScholarshipController extends Controller
         }
 
         $validated = $request->validate([
-            'matricula'            => 'required|numeric|digits:9', 
-            'requested_percentage' => 'required|integer|min:0|max:100',
-            'justification'        => 'required|string|max:1000',
+            'matricula'        => 'required|numeric|digits:9', 
+            'scholarship_type' => 'required|string|in:promedio,socioeconomica,discapacidad',
+            'justification'    => 'required|string|max:1000',
         ]);
 
         $student = $user->student()->firstOrCreate([]);
@@ -119,10 +120,10 @@ class ScholarshipController extends Controller
         $application = ScholarshipApplication::updateOrCreate(
             ['student_id' => $student->id],
             [
-                'matricula'            => $validated['matricula'],
-                'requested_percentage' => $validated['requested_percentage'],
-                'justification'        => $validated['justification'],
-                'status'               => 'pendiente',
+                'matricula'        => $validated['matricula'],
+                'scholarship_type' => $validated['scholarship_type'],
+                'justification'    => $validated['justification'],
+                'status'           => 'pendiente',
             ]
         );
 

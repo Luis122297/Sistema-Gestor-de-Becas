@@ -9,9 +9,10 @@ class ScholarshipApplication extends Model
 {
     protected $fillable = [
         'student_id',
+        'matricula',
         'current_gpa',
+        'scholarship_type',
         'status',
-        'requested_percentage',
         'justification',
         'assigned_percentage',
         'professor_comment',
