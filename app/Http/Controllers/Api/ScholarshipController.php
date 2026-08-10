@@ -17,7 +17,8 @@ class ScholarshipController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        $query = ScholarshipApplication::with(['student.career', 'student.group']);
+        
+        $query = ScholarshipApplication::with(['student.career', 'student.group'])->latest();
 
         if ($user->role === 'alumno') {
              $query->whereHas('student', function ($q) use ($user) {
@@ -48,13 +49,12 @@ class ScholarshipController extends Controller
         if ($request->user()->role !== 'jefe_carrera') return response()->json(['message' => 'Acceso denegado'], 403);
 
         $applications = ScholarshipApplication::with('student.user')->get();
-        $csvData = "\xEF\xBB\xBF" . "Alumno;Matricula;Promedio;Tipo_Beca;Porcentaje_Asignado;Estatus\n";
+        $csvData = "\xEF\xBB\xBF" . "Alumno;Matricula;Promedio;Porcentaje_Asignado;Estatus\n";
         
         foreach ($applications as $app) {
             $nombre = $app->student && $app->student->user ? $app->student->user->name : 'Sin Nombre';
             $porcentaje = $app->assigned_percentage ?? 0;
-            $tipoBeca = ucfirst($app->scholarship_type ?? 'N/A');
-            $csvData .= "{$nombre};{$app->matricula};{$app->current_gpa};{$tipoBeca};{$porcentaje};{$app->status}\n";
+            $csvData .= "{$nombre};{$app->matricula};{$app->current_gpa};{$porcentaje};{$app->status}\n";
         }
 
         return response($csvData)
@@ -76,7 +76,20 @@ class ScholarshipController extends Controller
             'validated_grades'     => 'boolean',
         ]);
 
-        $application->update($validated);
+        $newStatus = $application->status;
+
+        if (str_starts_with($validated['professor_comment'], '[RECHAZADO]')) {
+            $newStatus = 'rechazada';
+        }
+
+        $application->update([
+            'professor_comment'    => $validated['professor_comment'],
+            'validated_economy'    => $validated['validated_economy'],
+            'validated_disability' => $validated['validated_disability'],
+            'validated_grades'     => $validated['validated_grades'],
+            'status'               => $newStatus,
+        ]);
+
         return response()->json(['message' => 'Recomendación guardada con éxito', 'data' => new ScholarshipResource($application)]);
     }
 
