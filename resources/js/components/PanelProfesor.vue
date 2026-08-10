@@ -44,7 +44,7 @@
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Alumno</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Matrícula</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Promedio</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Promedio Declarado</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Estatus</th>
                                 <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Acción</th>
                             </tr>
@@ -58,10 +58,10 @@
                                     <div class="font-bold text-gray-900">{{ app.student?.user?.name || app.student_name || 'Alumno' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-600">{{ app.matricula }}</div>
+                                    <div class="text-sm font-mono text-gray-700 font-bold bg-gray-100 px-2 py-1 rounded inline-block">{{ app.matricula }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-600 font-bold">{{ app.current_gpa || app.gpa }}</div>
+                                    <div class="text-sm text-[#7A2033] font-bold">{{ app.current_gpa || app.gpa || '0.00' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 capitalize">
@@ -85,31 +85,43 @@
                     Regresar a la lista de alumnos
                 </button>
 
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-6">
-                    <h3 class="text-xl font-extrabold text-gray-900 mb-4 border-b pb-2">Datos del Solicitante</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#FCE5D6] rounded-bl-full opacity-50 -z-0"></div>
+                    <h3 class="text-xl font-extrabold text-gray-900 mb-4 border-b pb-2 relative z-10">Datos del Solicitante</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 relative z-10">
                         <div>
                             <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Nombre</span>
                             <span class="font-bold text-gray-900">{{ selectedApplication.student?.user?.name || selectedApplication.student_name || 'Alumno' }}</span>
                         </div>
                         <div>
                             <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Matrícula</span>
-                            <span class="font-bold text-gray-900">{{ selectedApplication.matricula }}</span>
+                            <span class="font-bold text-gray-900 font-mono">{{ selectedApplication.matricula }}</span>
                         </div>
                         <div>
-                            <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Promedio</span>
-                            <span class="font-bold text-[#7A2033]">{{ selectedApplication.current_gpa || selectedApplication.gpa }}</span>
+                            <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Promedio Declarado</span>
+                            <span class="font-bold text-[#7A2033] text-lg">{{ selectedApplication.current_gpa || selectedApplication.gpa || '0.00' }}</span>
                         </div>
                         <div>
-                            <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Estatus</span>
+                            <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Estatus Actual</span>
                             <span class="capitalize font-bold text-gray-900">{{ selectedApplication.status }}</span>
                         </div>
                     </div>
-                    <div>
+
+                    <div class="mb-6 relative z-10">
                         <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Motivo de la solicitud (Escrito por el alumno)</span>
-                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-gray-700 text-sm">
-                            {{ selectedApplication.justification || 'El alumno no proporcionó una justificación detallada.' }}
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-gray-700 text-sm italic">
+                            "{{ selectedApplication.justification || 'El alumno no proporcionó una justificación detallada.' }}"
                         </div>
+                    </div>
+
+                    <div class="relative z-10 border-t border-gray-100 pt-4" v-if="selectedApplication.student && selectedApplication.student.kardex_path">
+                        <span class="block text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Evidencia Documental</span>
+                        <button @click="openKardex(selectedApplication.student.kardex_path)" class="bg-[#7A2033] hover:bg-[#561322] text-white px-4 py-2 rounded-lg font-bold shadow-md transition-all flex items-center w-fit">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            Abrir Kardex del Alumno
+                        </button>
+                        <p class="text-xs text-gray-500 mt-2">Valida que el promedio declarado coincida con el documento oficial.</p>
                     </div>
                 </div>
 
@@ -125,15 +137,15 @@
                             <input v-model="form.validated_disability" type="checkbox" class="w-5 h-5 text-[#7A2033] border-gray-300 rounded focus:ring-[#7A2033]" />
                             <span class="text-gray-900 font-bold">He validado la situación de discapacidad del alumno (Si aplica)</span>
                         </label>
-                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded-lg transition-colors">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded-lg transition-colors border border-red-200 bg-red-50">
                             <input v-model="form.validated_grades" type="checkbox" class="w-5 h-5 text-[#7A2033] border-gray-300 rounded focus:ring-[#7A2033]" />
-                            <span class="text-gray-900 font-bold">He validado el historial de calificaciones (Kardex)</span>
+                            <span class="text-gray-900 font-bold">He corroborado que el Promedio Declarado coincide exactamente con el Kardex</span>
                         </label>
                     </div>
 
                     <div class="mb-6">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Comentario de Recomendación</label>
-                        <textarea v-model="form.professor_comment" required rows="5" class="w-full bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-[#7A2033] focus:border-[#7A2033] p-4 shadow-sm transition-colors border" placeholder="Describe brevemente por qué recomiadas (o no) a este alumno para recibir la beca..."></textarea>
+                        <textarea v-model="form.professor_comment" required rows="5" class="w-full bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-[#7A2033] focus:border-[#7A2033] p-4 shadow-sm transition-colors border" placeholder="Describe brevemente por qué recomiendas (o no) a este alumno para recibir la beca..."></textarea>
                     </div>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100">
@@ -190,6 +202,16 @@ const selectApplication = (app) => {
         professor_comment: app.professor_comment || ''
     };
     window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const openKardex = (base64Data) => {
+    if (!base64Data) return;
+    try {
+        const win = window.open();
+        win.document.write(`<iframe src="${base64Data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+    } catch (e) {
+        alert("Tu navegador bloqueó la ventana emergente para ver el archivo.");
+    }
 };
 
 const goBack = () => {
