@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ScholarshipApplication;
 use App\Models\Career;
+use App\Models\Group;
 use App\Http\Resources\ScholarshipResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -100,13 +101,21 @@ class ScholarshipController extends Controller
         if (!$student) {
             $career = Career::first(); 
             if (!$career) {
-                // Paracaídas por si Railway no tiene carreras sembradas
                 $career = Career::create(['name' => 'General', 'type' => 'ingenieria']);
             }
+            
+            $group = Group::first();
+
             $student = $user->student()->create([
                 'name'      => $user->name,
-                'career_id' => $career->id, 
+                'career_id' => $career->id,
+                'group_id'  => $group ? $group->id : null,
             ]);
+        } elseif (!$student->group_id) {
+            $group = Group::first();
+            if ($group) {
+                $student->update(['group_id' => $group->id]);
+            }
         }
 
         $application = ScholarshipApplication::updateOrCreate(
@@ -116,7 +125,7 @@ class ScholarshipController extends Controller
                 'scholarship_type' => $validated['scholarship_type'],
                 'justification'    => $validated['justification'],
                 'status'           => 'pendiente',
-                'current_gpa'      => 0.00, // <-- EL SALVAVIDAS: Un promedio por defecto para que no explote MySQL
+                'current_gpa'      => 0.00,
             ]
         );
 
