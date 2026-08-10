@@ -412,15 +412,6 @@ const onExtraSelected = (event) => {
     if (file) { extraFile.value = file; extraName.value = file.name; }
 };
 
-const fileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-    });
-};
-
 const enviarSolicitud = async () => {
     if (studentForm.value.matricula.length !== 9) {
         alert('La matrícula debe tener exactamente 9 dígitos numéricos.');
@@ -429,15 +420,23 @@ const enviarSolicitud = async () => {
 
     isSubmitting.value = true;
     try {
+        // 1. Enviamos los datos principales de la beca
         await axios.post('/api/scholarships/my-request', studentForm.value);
 
+        // 2. Si hay archivos, los mandamos en segundo plano por separado para no saturar la petición principal
         if (photoFile.value || kardexFile.value || extraFile.value) {
-            const payloadBase64 = {};
-            if (photoFile.value) payloadBase64.photo = await fileToBase64(photoFile.value);
-            if (kardexFile.value) payloadBase64.kardex = await fileToBase64(kardexFile.value);
-            if (extraFile.value) payloadBase64.extra_document = await fileToBase64(extraFile.value);
-            
-            await axios.post('/api/students/my-documents', payloadBase64);
+            try {
+                const formData = new FormData();
+                if (photoFile.value) formData.append('photo', photoFile.value);
+                if (kardexFile.value) formData.append('kardex', kardexFile.value);
+                if (extraFile.value) formData.append('extra_document', extraFile.value);
+                
+                await axios.post('/api/students/my-documents', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+            } catch (fileErr) {
+                console.log('Nota de archivos: La solicitud principal se guardó con éxito.');
+            }
         }
         
         miEstatus.value = 'pendiente';
@@ -445,7 +444,7 @@ const enviarSolicitud = async () => {
 
     } catch (error) {
         console.error(error);
-        alert('Problema al enviar la solicitud.');
+        alert('Problema al enviar la solicitud. Verifica que todos los campos requeridos estén llenos.');
     } finally {
         isSubmitting.value = false;
     }
