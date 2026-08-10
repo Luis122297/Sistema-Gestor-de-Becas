@@ -9,6 +9,7 @@ use App\Http\Resources\ScholarshipResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 
 class ScholarshipController extends Controller
 {
@@ -95,13 +96,12 @@ class ScholarshipController extends Controller
             'justification'    => 'required|string|max:1000',
         ]);
 
-        // AQUÍ ESTÁ LA MAGIA QUE ARREGLA EL ERROR 500
         $student = $user->student;
         if (!$student) {
             $career = Career::first(); 
             $student = $user->student()->create([
                 'name'      => $user->name,
-                'career_id' => $career ? $career->id : 1, // Le asigna una carrera para que la BD no explote
+                'career_id' => $career ? $career->id : 1, 
             ]);
         }
 
@@ -133,6 +133,26 @@ class ScholarshipController extends Controller
         ]);
 
         return response()->json(['message' => 'Porcentaje asignado correctamente', 'data' => new ScholarshipResource($application)]);
+    }
+    
+    public function myStatus(Request $request)
+    {
+        $user = Auth::user();
+        
+        $application = \App\Models\ScholarshipApplication::where('student_id', $user->id)->first();
+
+        if (!$application) {
+            return response()->json([
+                'status' => 'sin_solicitud',
+                'message' => 'No has enviado ninguna solicitud aún.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'application_status' => $application->status, 
+            'assigned_percentage' => $application->assigned_percentage
+        ]);
     }
 
     public function store(Request $request): JsonResponse { return response()->json(['message' => 'Not implemented'], 501); }
