@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\StudentDocumentController;
 use App\Http\Controllers\Api\TwoFactorController;
 use App\Http\Controllers\ProfessorController;
 
+Route::middleware('auth:sanctum')->get('/scholarships/my-status', [ScholarshipController::class, 'myStatus']);
+
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
