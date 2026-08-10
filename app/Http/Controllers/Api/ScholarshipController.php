@@ -99,9 +99,13 @@ class ScholarshipController extends Controller
         $student = $user->student;
         if (!$student) {
             $career = Career::first(); 
+            if (!$career) {
+                // Paracaídas por si Railway no tiene carreras sembradas
+                $career = Career::create(['name' => 'General', 'type' => 'ingenieria']);
+            }
             $student = $user->student()->create([
                 'name'      => $user->name,
-                'career_id' => $career ? $career->id : 1, 
+                'career_id' => $career->id, 
             ]);
         }
 
@@ -112,6 +116,7 @@ class ScholarshipController extends Controller
                 'scholarship_type' => $validated['scholarship_type'],
                 'justification'    => $validated['justification'],
                 'status'           => 'pendiente',
+                'current_gpa'      => 0.00, // <-- EL SALVAVIDAS: Un promedio por defecto para que no explote MySQL
             ]
         );
 
