@@ -154,6 +154,11 @@ class ScholarshipController extends Controller
         ]);
 
         $application = ScholarshipApplication::findOrFail($id);
+
+        if ($application->status === 'rechazada') {
+            return response()->json(['message' => 'No puedes asignar un porcentaje. El alumno ya fue rechazado en la evaluación.'], 403);
+        }
+
         $application->update([
             'assigned_percentage' => $validated['assigned_percentage'],
             'status'              => $validated['assigned_percentage'] > 0 ? 'aprobada' : 'rechazada'

@@ -95,10 +95,10 @@
                             </div>
                             <p class="text-sm text-gray-600 italic bg-gray-50 p-2 rounded-lg border border-gray-100">"{{ notif.justification }}"</p>
                             <div class="flex space-x-2 mt-4">
-                                <a v-if="notif.photo_url" :href="notif.photo_url" target="_blank" class="flex-1 text-center text-xs bg-[#FCE5D6] text-[#7A2033] px-3 py-2 rounded-lg hover:bg-[#FAD4BA] font-bold transition-colors">
+                                <a v-if="notif.photo_url || (notif.student && notif.student.profile_photo_path)" @click.prevent="openDocument(notif.photo_url || notif.student.profile_photo_path)" href="#" class="flex-1 text-center text-xs bg-[#FCE5D6] text-[#7A2033] px-3 py-2 rounded-lg hover:bg-[#FAD4BA] font-bold transition-colors">
                                      Ver Foto
                                 </a>
-                                <a v-if="notif.kardex_url" :href="notif.kardex_url" target="_blank" class="flex-1 text-center text-xs bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 font-bold transition-colors">
+                                <a v-if="notif.kardex_url || (notif.student && notif.student.kardex_path)" @click.prevent="openDocument(notif.kardex_url || notif.student.kardex_path)" href="#" class="flex-1 text-center text-xs bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 font-bold transition-colors">
                                      📄 Ver Kardex
                                 </a>
                             </div>
@@ -500,7 +500,21 @@ const asignarPorcentaje = async (id, porcentaje) => {
         await axios.put(`/api/scholarships/${id}/assign-percentage`, { assigned_percentage: porcentaje });
         alert('Porcentaje asignado correctamente');
     } catch (error) {
-        alert('Error al guardar el porcentaje.');
+        if (error.response && error.response.data && error.response.data.message) {
+            alert(error.response.data.message);
+        } else {
+            alert('Error al guardar el porcentaje.');
+        }
+    }
+};
+
+const openDocument = (base64Data) => {
+    if (!base64Data) return;
+    try {
+        const win = window.open();
+        win.document.write(`<iframe src="${base64Data}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+    } catch (e) {
+        alert("Tu navegador bloqueó la ventana emergente para ver el archivo.");
     }
 };
 
