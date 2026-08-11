@@ -134,14 +134,16 @@
                                             <div class="text-sm font-black" :class="app.gpa >= 8.5 ? 'text-green-600' : 'text-red-500'">{{ app.gpa }}</div>
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
-                                            <span v-if="app.meets_academic_criteria" class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-emerald-100 text-emerald-800">Aprobado</span>
-                                            <span v-else class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-rose-100 text-rose-800">Rechazado</span>
+                                            <span v-if="app.status === 'aprobada'" class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-emerald-100 text-emerald-800">Aprobada</span>
+                                            <span v-else-if="app.status === 'rechazada'" class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-rose-100 text-rose-800">Rechazada</span>
+                                            <span v-else class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-amber-100 text-amber-800">En Revisión</span>
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
-                                            <div class="flex items-center space-x-1">
+                                            <div v-if="app.status !== 'rechazada'" class="flex items-center space-x-1">
                                                 <input type="number" v-model="app.assigned_percentage" class="w-16 border-gray-300 rounded-lg shadow-sm focus:ring-[#7A2033] focus:border-[#7A2033] text-xs p-1 border" placeholder="Ej. 50">
                                                 <button @click="asignarPorcentaje(app.id, app.assigned_percentage)" class="bg-[#FCE5D6] text-[#7A2033] hover:bg-[#FAD4BA] px-2 py-1 rounded-lg text-xs font-bold transition-colors">OK</button>
                                             </div>
+                                            <span v-else class="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded border border-red-100">No Aplica</span>
                                         </td>
                                     </tr>
                                 </tbody>
